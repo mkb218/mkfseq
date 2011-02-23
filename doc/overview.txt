@@ -1,0 +1,6 @@
+params: loop mode, loop point (in sample num relative to original stream), speed adjust, velocity, pitch mode, note assign, tuning, delay
+
+1.) Read in raw audio as mono, same sample rate and word size as orig
+2.) Foreach 128 256 384 512
+a.) divide stream into n buckets
+b.) find peaks in 
