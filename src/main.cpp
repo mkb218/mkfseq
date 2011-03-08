@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include "fseq.h"
 
 static void process(FILE * f) {
@@ -10,6 +11,7 @@ static void process(FILE * f) {
         return;
     }
     mkfseq::fseq *fseq = mkfseq::fseq::from_bytes(bytes);
+	fseq->to_csv(std::cout);
     return;
 }
 

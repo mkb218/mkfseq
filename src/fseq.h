@@ -2,6 +2,7 @@
 #define __H2P_FSEQ__
 
 #include <cstring>
+#include <string>
 #include <exception>
 
 namespace mkfseq {
@@ -82,7 +83,6 @@ namespace mkfseq {
     struct frame {
         sevenb_short fund_pitch;
         sevenb_char<0> voiced_freq_hi[8];
-        char reserved[0]; // ???
         sevenb_char<0> voiced_freq_lo[8];
         sevenb_char<0> voiced_level[8];
         sevenb_char<0> unvoiced_freq_hi[8];
@@ -94,6 +94,7 @@ namespace mkfseq {
     public:
         static fseq * from_bytes(const char * b);
         fseq() { memset(this, 0, sizeof(fseq)); }
+		void to_csv(std::ostream &) const;
         const char * to_sysex() const;
     private:
 		void setchecksum();
