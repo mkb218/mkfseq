@@ -1,0 +1,29 @@
+spectral analysis F=1024
+- grab F samples into real part, multiply by hamming window
+- create array of F samples for imaginary part
+- run FFT
+- ignoring f=0 and f=nyquist, assign power = re^2 + im^2 to each sample in frame. find highest power 
+- normalize all samples in all frames to max power across all frames
+- store frequencies for each frame
+
+pitch detection L=110 U=880
+- autocorrelate
+- each window is (samples/L)*2
+- starting from (samples/L) through (samples/U) 
+for( var comb:int=combLow; comb>=combHigh; comb-- ) {
+	var power:Number = 0;
+	for( var w:int=0; w<comb; w++ ) {
+		power += samps[w] * samps[w+comb];
+	}
+	
+	// Try to compensate for octave errors: Multiply by the comb width
+	//power *= comb;	// NO, we're already summing less samples for narrower combs
+	
+	if( power > bestPower ) {
+		bestPower = power;
+		bestComb = comb;
+	}
+}
+
+formant detector
+- 

@@ -1,0 +1,2 @@
+_CGO_CFLAGS=-I/opt/local/include
+_CGO_LDFLAGS=-ldjbfft -L/opt/local/lib
