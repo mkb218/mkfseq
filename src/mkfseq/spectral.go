@@ -1,12 +1,14 @@
 package mkfseq
 
-//#cgo CFLAGS: -I/opt/local/include
-//#cgo LDFLAGS: -ldjbfft -L/opt/local/lib
+//#cgo CFLAGS: -I/opt/local/include 
+//#cgo LDFLAGS: /opt/local/lib/djbfft.a
 //#include <fftc8.h>
 import "C"
 
 import "math"
 import "unsafe"
+import "os"
+import audio "mkfseq/audio"
 
 const Frames = 512
 const FftBins = 1024
