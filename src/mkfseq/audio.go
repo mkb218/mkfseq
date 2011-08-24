@@ -1,4 +1,4 @@
-package audio
+package mkfseq
 
 import "os"
 import "fmt"

@@ -7,8 +7,6 @@ import "C"
 
 import "math"
 import "unsafe"
-import "os"
-import audio "mkfseq/audio"
 
 const Frames = 512
 const FftBins = 1024
