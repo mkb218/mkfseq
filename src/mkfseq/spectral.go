@@ -1,7 +1,7 @@
 package mkfseq
 
 //#cgo CFLAGS: -I/opt/local/include 
-//#cgo LDFLAGS: /opt/local/lib/djbfft.a
+//#cgo LDFLAGS: -L/opt/local/lib -ldjbfft
 //#include <fftc8.h>
 import "C"
 
