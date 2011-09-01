@@ -1,4 +1,4 @@
-package mkfseq
+package fseq
 
 import "fmt"
 import "os"

@@ -1,18 +1,19 @@
 package main
 
 import "os"
-import "mkfseq"
+import "fseq"
+import "sndfile"
 import "fmt"
 
 func main() {
-	file, err := os.Open(os.Args[1])
+	var i sndfile.Info
+	file, err := sndfile.Open(os.Args[1], sndfile.Read, &i)
 	if err != nil {
 		panic(err)
 	}
-	af, err := mkfseq.ParseAIFF(file)
-	fmt.Printf("%v\n", af)
+	s := fseq.Analyze(file)
+	fmt.Printf("%v\n", len(s.Freqs))
 	if err != nil {
 		panic(err)
 	}
-	f := mkfseq.CreateFseq(af)	
 }

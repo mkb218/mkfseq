@@ -4,17 +4,13 @@
 
 include $(GOROOT)/src/Make.inc
 
-TARG=mkfseq
+TARG=fseq
 
 GOFILES=\
-	audio.go\
-	formant.go\
 	spectral.go\
+#	formant.go\
+#	syx.go
 
 GOFLAGS=-N
 
 include $(GOROOT)/src/Make.pkg
-
-fseq: install main.go
-	$(GC) main.go
-	$(LD) -o $@ main.$O

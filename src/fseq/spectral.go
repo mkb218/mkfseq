@@ -1,6 +1,7 @@
-package mkfseq
+package fseq
 
 import "math"
+import "sndfile"
 import "fmt"
 import "os"
 import "github.com/runningwild/go-fftw"
@@ -15,17 +16,34 @@ type SpectralAnalysis struct {
     Freqs []float64
 }
 
-func Analyze(af AudioFile) (s *SpectralAnalysis) {
+func mixdown(samps []float64, channels int) (out []float64) {
+	out = make([]float64, len(samps)/channels)
+	i := 0
+	c := channels
+	for _, s := range samps {
+		out[i] += s/float64(channels)
+		c--
+		if c == 0 {
+			c = channels
+			i++
+		}
+	}
+	return
+}
+
+func Analyze(af *sndfile.File) (s *SpectralAnalysis) {
     s = new(SpectralAnalysis)
     s.Frames = make([]SpecFrame, Frames)
     
     var maxPower float64
     for f := uint(0); f < Frames; f++ {
-        samps, err := af.GetSamplesAt(FftBins, f * af.Length() / Frames)
+		full := make([]float64, FftBins*af.Format.Channels)
+        _, err := af.ReadFrames(full)
         if err != nil {
             panic(err)
         }
 
+		samps := mixdown(full, int(af.Format.Channels))
         c := fftw.Alloc1d(len(samps))
 		o := fftw.Alloc1d(len(samps))
         for i := 0; i < FftBins; i++ {
