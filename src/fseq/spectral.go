@@ -6,10 +6,6 @@ import "fmt"
 import "os"
 import "github.com/runningwild/go-fftw"
 
-const Frames = 512
-const FftBins = 1024
-const SpectrumBands = FftBins/2 - 1
-
 type SpecFrame []float64
 type SpectralAnalysis struct {
 	Frames []SpecFrame
@@ -31,13 +27,14 @@ func mixdown(samps []float64, channels int) (out []float64) {
 	return
 }
 
-func spectral_analyze(af *sndfile.File) (s *SpectralAnalysis) {
+func spectral_analyze(af *sndfile.File, Frames, FftBins int) (s *SpectralAnalysis) {
+	SpectrumBands := FftBins/2 - 1
 	s = new(SpectralAnalysis)
 	s.Frames = make([]SpecFrame, Frames)
 
 	var maxPower float64
-	for f := uint(0); f < Frames; f++ {
-		full := make([]float64, FftBins*af.Format.Channels)
+	for f := 0; f < Frames; f++ {
+		full := make([]float64, int32(FftBins)*af.Format.Channels)
 		_, err := af.ReadFrames(full)
 		if err != nil {
 			panic(err)
@@ -77,7 +74,7 @@ func spectral_analyze(af *sndfile.File) (s *SpectralAnalysis) {
 
 	s.Freqs = make([]float64, Frames)
 	for i := 0; i < Frames; i++ {
-		s.Freqs[i] = float64(((float64(44100) * 0.5) / (Frames + float64(1))) * float64(i+1))
+		s.Freqs[i] = float64(((float64(44100) * 0.5) / float64(Frames + 1)) * float64(i+1))
 	}
 
 	return

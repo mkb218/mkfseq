@@ -8,9 +8,7 @@ TARG=fseq
 
 GOFILES=\
 	spectral.go\
-#	formant.go\
-#	syx.go
-
-GOFLAGS=-N
+	formant.go\
+	syx.go
 
 include $(GOROOT)/src/Make.pkg

@@ -1,5 +1,6 @@
 package main
 
+import "flag"
 import "os"
 import "fseq"
 import "sndfile"
@@ -11,8 +12,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	s := fseq.Analyze(file)
-	fmt.Printf("%v\n", len(s.Freqs))
+	length := flag.Int("length", 512, "fseq length")
+	fftbins := flag.Int("fftbins", 1024, "FFT bins")
+	flag.Parse()
+	f := fseq.CreateFseq(file, *length, *fftbins)
+	fmt.Printf("%v\n", f)
 	if err != nil {
 		panic(err)
 	}
