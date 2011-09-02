@@ -9,11 +9,11 @@ func TestAnalyze(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := spectral_analyze(file)
+	s := spectral_analyze(file, 512, 1024)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(s.Freqs) != Frames || len(s.Frames) != Frames {
+	if len(s.Freqs) != 512 || len(s.Frames) != 512 {
 		t.Error("unexpected size for data members")
 	}
 }
