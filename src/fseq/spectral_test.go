@@ -15,8 +15,8 @@ func TestAnalyze(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(s.Freqs) != 512 || len(s.Frames) != 512 {
-		t.Error("unexpected size for data members")
+	if len(s.Freqs) != 511 || len(s.Frames) != 512 {
+		t.Errorf("unexpected size for data members freqs %d frames %d", len(s.Freqs), len(s.Frames))
 	}
 	f, err := os.Create("spectrum.csv")
 	if err != nil {
@@ -28,7 +28,7 @@ func TestAnalyze(t *testing.T) {
 	}
 	fmt.Fprint(f, "\n")
 	
-	for i := 0; i < 512; i++ {
+	for i := 0; i < len(s.Freqs); i++ {
 		fmt.Fprintf(f, "%f", s.Freqs[i])
 		for j := 0; j < len(s.Frames[i]); j++ {
 			fmt.Fprintf(f, ",%f", s.Frames[i][j])

@@ -37,12 +37,12 @@ type Fseq struct {
 	NoteAssign, PitchTuning, SeqDelay int
 }
 
-func newFseq() (f *Fseq) {
+func newFseq(length int) (f *Fseq) {
 	f = new(Fseq)
-	f.Pitches = make([]float64, VoicedOps)
+	f.Pitches = make([]float64, 0, length)
 	for i := range f.Voiced {
-		f.Voiced[i] = make(Operator, VoicedOps)
-		f.Unvoiced[i] = make(Operator, VoicedOps)
+		f.Voiced[i] = make(Operator, length)
+		f.Unvoiced[i] = make(Operator, length)
 	}
 	f.Title = "Untitled"
 	f.LoopEnd = 511
@@ -55,7 +55,7 @@ func newFseq() (f *Fseq) {
 }
 
 func CreateFseq(af *sndfile.File, length int, fftbins int) (f *Fseq) {
-	f = newFseq()
+	f = newFseq(length)
 	f.fdetect(af, length, fftbins)
 	f.pdetect(af, 55.0, 880.0, length, fftbins)
 	return
@@ -84,20 +84,42 @@ func clamp(signal, min, max float64) float64 {
 func (f *Fseq) pdetect(af *sndfile.File, lower, upper float64, length, fftbins int) {
 	windowWidth := SampleRate / lower
 	t := math.Trunc(windowWidth)
-	var width uint
-	if int(math.Trunc((windowWidth-t)*10.0)) < 5 {
-		width = uint(t)
-	} else {
-		width = uint(math.Ceil(windowWidth))
-	}
-	for index := int64(0); index < af.Format.Frames; index += int64(width * 2) {
-		full := make([]float64, int32(width*2)*af.Format.Channels)
-		read, err := af.ReadFrames(full)
-		if read != int64(width*2) {
-			width = uint(read / 2)
+	for index := 0; index < length; index++ {
+		var width uint
+		if int(math.Trunc((windowWidth-t)*10.0)) < 5 {
+			width = uint(t)
+		} else {
+			width = uint(math.Ceil(windowWidth))
 		}
+		full := make([]float64, int32(width*2)*af.Format.Channels)
+
+		_, err := af.Seek(af.Format.Frames * int64(index) / int64(length), sndfile.Set)
 		if err != nil {
 			panic(err)
+		}
+
+		read, err := af.ReadFrames(full)
+		if err != nil {
+			panic(err)
+		}
+		
+		if sumread := read ; read != int64(width*2) {
+			_, err = af.Seek(0, sndfile.Set)
+
+			if err != nil {
+				panic(err)
+			}
+
+			read, err = af.ReadFrames(full[(int32(sumread)*af.Format.Channels):])
+			
+			if err != nil {
+				panic(err)
+			}
+
+			if read + sumread != int64(width*2) {
+				width = uint((read + sumread) / 2)
+			}
+			
 		}
 		samps := mixdown(full, int(af.Format.Channels))
 		bestComb := uint(0)
@@ -217,15 +239,14 @@ func pickStoreFormants(f *Fseq, i, count int, vpowers, vfreqs, upowers, ufreqs, 
 	sort.Ints(bestIndexes)
 
 	for v := 0; v < VoicedOps; v++ {
-		f.Voiced[i][v] =
-			OperatorFrame{
-				vpowers[bestIndexes[v]],
-				vfreqs[bestIndexes[v]],
-			}
-		f.Unvoiced[i][v] =
-			OperatorFrame{
-				upowers[bestIndexes[v]],
-				ufreqs[bestIndexes[v]],
-			}
+		b:= bestIndexes[v]
+		vp := vpowers[b]
+		vf := vfreqs[b]
+		up := upowers[b]
+		uf := ufreqs[b]
+		fv := &(f.Voiced[v])
+		(*fv)[i] = OperatorFrame{vp,vf}
+		fu := &(f.Unvoiced[v])
+		(*fu)[i] = OperatorFrame{up,uf}
 	}
 }

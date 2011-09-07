@@ -72,9 +72,9 @@ func spectral_analyze(af *sndfile.File, Frames, FftBins int) (s *SpectralAnalysi
 		}
 	}
 
-	s.Freqs = make([]float64, Frames)
-	for i := 0; i < Frames; i++ {
-		s.Freqs[i] = float64(((float64(44100) * 0.5) / float64(Frames + 1)) * float64(i+1))
+	s.Freqs = make([]float64, SpectrumBands)
+	for i, _ := range s.Freqs {
+		s.Freqs[i] = float64(((float64(44100) * 0.5) / float64(SpectrumBands + 1)) * float64(i+1))
 	}
 
 	return
